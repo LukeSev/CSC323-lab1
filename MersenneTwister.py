@@ -1,64 +1,73 @@
-# First define constants to be used throughout Algo
-W, N, M, R = 32, 624, 397, 31
-A = int("9908B0DF", 16)
-U, D = 11, int("FFFFFFFF", 16)
-S, B = 7, int("9D2C5680", 16)
-T, C = 15, int("EFC60000", 16)
-L = 18
-F = 1812433253
+class MersenneTwister:
+    # Returns lowerst 32 bits of number
+    def int_bits(self, num):
+        return int(0xFFFFFFFF & num)
 
-# returns lowest x bits of num
-def lowest_bits(num, x):
-    return num & int("F" * int((x/4)), 16)
-    
-def seed_MT(MT, seed):
-    index = N
-    MT[0] = seed
-    for i in range (1, N, 1):
-        intermed = (F * (MT[i-1] ^ (MT[i-1] >> (W-2)) + i))
-        MT[i] = lowest_bits(intermed, W) # Lowest W bits of intermediate var
+    def seed_MT(self, seed):
+        self.index = self.N
+        self.MT[0] = seed
+        for i in range(1, self.N):
+            intermed = (self.F * (self.MT[i-1] ^ (self.MT[i-1] >> (self.W-2))) + i)
+            self.MT[i] = self.int_bits(intermed) # Lowest W bits of intermediate var
 
-def twist(MT, upper_mask, lower_mask):
-    for i in range(N):
-        xUpper = (MT[i] & upper_mask)
-        xLower = MT[(i+1) % N] & lower_mask
-        # x = xUpper concatenated with xLower
-        x = (xUpper << R) | xLower
+    def twist(self):
+        for i in range(self.N):
+            xUpper = (self.MT[i] & self.upper_mask)
+            xLower = self.MT[(i+1) % self.N] & self.lower_mask
+            # x = xUpper concatenated with xLower
+            x = self.int_bits((xUpper << self.R) | xLower)
 
-        xA = x >> 1
-        if((x % 2) != 0):
-            xA = xA ^ A
+            xA = x >> 1
+            if((x % 2) != 0):
+                xA = xA ^ self.A
+            
+            self.MT[i] = self.MT[(i + self.M) % self.N] ^ xA
+        self.index = 0
         
-        MT[i] = MT[(i + M) % N] ^ xA
-    return 0 # Return new index
+    def extract_number(self):
+        if(self.index >= self.N):
+            if(self.index > self.N):
+                print("Error: Generator was never seeded")
+            self.twist()
 
-def extract_number(MT, index):
-    if(index >= N):
-        if(index > N):
-            print("Error: Generator was never seeded")
-        index = twist()
+        y = self.MT[self.index]
+        y = y ^ ((y >> self.U))
+        y = y ^ ((y << self.S) & self.B)
+        y = y ^ ((y << self.T) & self.C)
+        y = y ^ (y >> self.L)
 
-    y = MT[index]
-    y = y ^ ((y >> U) & D)
-    y = y ^ ((y << S) & B)
-    y = y ^ ((y << T) & C)
-    y = y ^ (y >> 1)
+        self.index += 1
+        return self.int_bits(y)
 
-    index += 1
-    return lowest_bits(y, W)
+    def __init__(self, seed):
+        self.W, self.N, self.M, self.R = 32, 624, 397, 31
+        self.A = 0x9908B0DF
+        self.U, self.D = 11, 0xFFFFFFFF
+        self.S, self.B = 7, 0x9D2C5680
+        self.T, self.C = 15, 0xEFC60000
+        self.L = 18
+        self.F = 1812433253
 
+        self.MT = [0] * self.N
+        self.index = (self.N) + 1
+        self.lower_mask = (1 << self.R) - 1
+        self.upper_mask = self.int_bits(~self.lower_mask) # Take lowest W bits of not lower mask
 
-def MersenneTwister(seed):
-    MT = [0] * N
-    index = N+1
-    lower_mask = (1 << R) - 1
-    upper_mask = lowest_bits(~lower_mask, W) # Take lowest W bits of not lower mask
-
-    seed_MT(MT, seed)
-
+        self.seed_MT(seed)
+    
 def main():
-    seed = 57
-    print(MersenneTwister(seed))
+    seed = 123
+    mt1 = MersenneTwister(seed)
+    mt2 = MersenneTwister(seed)
+
+    res1 = [0] * 20
+    res2 = [0] * 20
+    for i in range(20):
+        res1[i] = mt1.extract_number()
+        res2[i] = mt2.extract_number()
+    
+    print("seed: {}\n\nMT1 Results:\n{}\n\nMT2 Results:\n{}".format(seed, res1, res2))
+    
 
 if __name__ == '__main__':
     main()
