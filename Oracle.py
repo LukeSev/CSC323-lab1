@@ -2,7 +2,6 @@ import MersenneTwister
 import random
 import time
 import base64
-import converting
 
 def oracleFunc():
     time.sleep(random.randint(5, 60))
