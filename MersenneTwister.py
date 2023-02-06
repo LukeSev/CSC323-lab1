@@ -1,4 +1,20 @@
 class MersenneTwister:
+    def __init__(self, seed):
+        self.W, self.N, self.M, self.R = 32, 624, 397, 31
+        self.A = 0x9908B0DF
+        self.U, self.D = 11, 0xFFFFFFFF
+        self.S, self.B = 7, 0x9D2C5680
+        self.T, self.C = 15, 0xEFC60000
+        self.L = 18
+        self.F = 1812433253
+
+        self.MT = [0] * self.N
+        self.index = (self.N) + 1
+        self.lower_mask = (1 << self.R) - 1
+        self.upper_mask = self.int_bits(~self.lower_mask) # Take lowest W bits of not lower mask
+
+        self.seed_MT(seed)
+    
     # Returns lowerst 32 bits of number
     def int_bits(self, num):
         return int(0xFFFFFFFF & num)
@@ -38,22 +54,6 @@ class MersenneTwister:
 
         self.index += 1
         return self.int_bits(y)
-
-    def __init__(self, seed):
-        self.W, self.N, self.M, self.R = 32, 624, 397, 31
-        self.A = 0x9908B0DF
-        self.U, self.D = 11, 0xFFFFFFFF
-        self.S, self.B = 7, 0x9D2C5680
-        self.T, self.C = 15, 0xEFC60000
-        self.L = 18
-        self.F = 1812433253
-
-        self.MT = [0] * self.N
-        self.index = (self.N) + 1
-        self.lower_mask = (1 << self.R) - 1
-        self.upper_mask = self.int_bits(~self.lower_mask) # Take lowest W bits of not lower mask
-
-        self.seed_MT(seed)
     
 def main():
     seed = 123
@@ -67,7 +67,8 @@ def main():
         res2[i] = mt2.extract_number()
     
     print("seed: {}\n\nMT1 Results:\n{}\n\nMT2 Results:\n{}".format(seed, res1, res2))
-    
+
+    #print("\n\n{}\nlower mask: {}\nupper mask: {}".format(hex(0xFFFFFFFF), hex(0xFFFFFFFF & mt1.lower_mask), hex(0xFFFFFFFF & mt1.upper_mask)))
 
 if __name__ == '__main__':
     main()
