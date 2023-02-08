@@ -7,7 +7,7 @@ def main():
     reset_URL = base_URL + "/forgot"
     register_URL = base_URL + "/register"
     adv_parameters = {'user':'adv', 'password':'password_lmao'}
-    new_password = "hahahaha"
+    new_password = "lmao"
     admin_parameters = {'user':'admin', 'password':new_password}
     adv = unmixer.unmixer()
 
@@ -35,7 +35,7 @@ def main():
     adv_guess = str(adv.mt.extract_number())
     for j in range(7):
         adv_guess += ":" + str(adv.mt.extract_number())
-    admin_url = "localhost:8080/reset?token=" + base64.b64encode(adv_guess.encode('utf-8')).decode('utf-8')
+    admin_url = base_URL + "/reset?token=" + base64.b64encode(adv_guess.encode('utf-8')).decode('utf-8')
     print("Admin's Password Reset URL: {}".format(admin_url))
 
     # Now generate token as admin so url can be used
