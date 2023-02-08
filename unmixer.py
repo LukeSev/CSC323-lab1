@@ -134,23 +134,6 @@ class unmixer:
             tokens[i] = ints
         return tokens
 
-    def doTheDeed(self):
-        self.index += 1
-        print("Token #{} Generated".format(self.index))
-        if(self.index == 78):
-            victim_arr = [0] * 78
-            for i in range(78):
-                victim_arr[i] = base64.b64decode(self.b64_tokens[i]).decode('utf-8')
-            tokens = self.split_nums(victim_arr)
-            self.crack_it(tokens)
-            for i in range(624):
-                self.mt.extract_number()
-            adv_guess = str(self.mt.extract_number())
-            for j in range(7):
-                adv_guess += ":" + str(self.mt.extract_number())
-            print("Next token: {}".format(base64.b64encode(adv_guess.encode('utf-8'))))
-            self.index = 0
-
 
 def main():
     # um = unmixer()
@@ -196,13 +179,22 @@ def main():
         #print("Number of MT values not equal between victim and adversary: {}".format(neq))
         #print(indices)
 
+        # Generate victim's next token
+        new_token = str(mt1.extract_number())
+        for j in range(7):
+            new_token += ":" + str(mt1.extract_number())
+        victim_b64tok = base64.b64encode(new_token.encode('utf-8')).decode('utf-8')
+
         for i in range(624):
             adv.mt.extract_number()
-        new_token = mt1.extract_number()
-        adv_guess = adv.mt.extract_number()
-        if(new_token == adv_guess):
+        adv_guess = str(adv.mt.extract_number())
+        for j in range(7):
+            adv_guess += ":" + str(adv.mt.extract_number())
+        adv_b64tok = base64.b64encode(adv_guess.encode('utf-8')).decode('utf-8')
+
+        if(victim_b64tok == adv_b64tok):
             print("\nTokens match!!!\nTest #{}".format(x+1))
-            print("Victim's next token: {}\nAdversary's 'guess' token: {}\n".format(new_token, adv_guess))
+            print("Victim's next token: \n    pseudorandom ints: {}\n    base64: {}\n\nAdversary's 'guess' token:\n    pseudorandom ints: {}\n    base64: {} \n\n".format(new_token, victim_b64tok, adv_guess, adv_b64tok))
             successful += 1
         
     print("Testing complete! Number of matches: {}\nNumber of Total Tests: {}\nSuccess Rate: {}%".format(successful, tests, 100*round(successful/tests, 4)))
