@@ -2,6 +2,10 @@ import web
 from web import form
 import MT19937
 import base64, datetime, hashlib, os
+import unmixer
+
+um = unmixer.unmixer()
+
 
 # token timeout, in minutes
 TIMEOUT = 5		
@@ -93,7 +97,6 @@ class forgot:
 				return render.generic(form, msg, err)
 		else:
 			err = "User not found."
-
 		return render.generic(form, msg, err)
 
 class register:

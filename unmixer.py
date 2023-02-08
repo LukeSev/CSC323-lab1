@@ -14,6 +14,8 @@ class unmixer:
 
         self.mt = MersenneTwister.MersenneTwister(0)
         self.mt.index = 0
+        self.b64_tokens = [0] * 78
+        self.index = 0
 
     def int_bits(self, num):
         return int(0xFFFFFFFF & num)
@@ -131,6 +133,23 @@ class unmixer:
                 ints[j] = int(strings[j])
             tokens[i] = ints
         return tokens
+
+    def doTheDeed(self):
+        self.index += 1
+        print("Token #{} Generated".format(self.index))
+        if(self.index == 78):
+            victim_arr = [0] * 78
+            for i in range(78):
+                victim_arr[i] = base64.b64decode(self.b64_tokens[i]).decode('utf-8')
+            tokens = self.split_nums(victim_arr)
+            self.crack_it(tokens)
+            for i in range(624):
+                self.mt.extract_number()
+            adv_guess = str(self.mt.extract_number())
+            for j in range(7):
+                adv_guess += ":" + str(self.mt.extract_number())
+            print("Next token: {}".format(base64.b64encode(adv_guess.encode('utf-8'))))
+            self.index = 0
 
 
 def main():
