@@ -68,7 +68,5 @@ def main():
     
     print("seed: {}\n\nMT1 Results:\n{}\n\nMT2 Results:\n{}".format(seed, res1, res2))
 
-    #print("\n\n{}\nlower mask: {}\nupper mask: {}".format(hex(0xFFFFFFFF), hex(0xFFFFFFFF & mt1.lower_mask), hex(0xFFFFFFFF & mt1.upper_mask)))
-
 if __name__ == '__main__':
     main()

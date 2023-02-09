@@ -68,7 +68,6 @@ class unmixer:
         print("(mix)   s4: {} - {}".format(hex(y), bin(y)))
         mixed = self.int_bits(y)
         mix64 = base64.b64encode(int.to_bytes(mixed, 4, "big"))
-        #print("\nMIXED: {} - {}\nBASE64: {}\n".format(mixed, mix64))
         un64 = int.from_bytes(base64.b64decode(mix64), "big")
         # Notation comes from my drawing/notes where I wrote everything out in steps
         # First get s4, the output of extract number (i.e. after the fourth step)
@@ -105,11 +104,6 @@ class unmixer:
         y2 = (s1 ^ self.bit_rs(y1, 0, self.U)) & 0x1FFC00
         y3 = (s1 ^ self.bit_rs(y2, self.U, 2*self.U)) & 0x3FF
         y = y1 | y2 | y3
-        # print("(unmix) s4: {} - {}".format(hex(s4), bin(s4)))
-        # print("(unmix) s3: {} - {}".format(hex(s3), bin(s3)))
-        # print("(unmix) s2: {} - {}".format(hex(s2), bin(s2)))
-        # print("(unmix) s1: {} - {}".format(hex(s1), bin(s1)))
-        # print("(unmix)  y: {} - {}".format(hex(y), bin(y)))
         return y
 
     def crack_it(self, victim_tokens):
@@ -136,15 +130,6 @@ class unmixer:
 
 
 def main():
-    # um = unmixer()
-    # testval = 0xC4F8D0C2
-    # failed = 0
-    # um.test(0x73df8ea9)
-    # while(failed == 0):
-    #     testval = random.getrandbits(32)
-    #     failed = um.test(testval)
-
-
     successful = 0
     tests = 10
     for x in range(tests):
@@ -176,8 +161,6 @@ def main():
             if(mt1.MT[i] != adv.mt.MT[i]):
                 neq += 1
                 indices.append(i)
-        #print("Number of MT values not equal between victim and adversary: {}".format(neq))
-        #print(indices)
 
         # Generate victim's next token
         new_token = str(mt1.extract_number())
