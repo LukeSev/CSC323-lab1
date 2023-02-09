@@ -1,14 +1,20 @@
 import requests
 import unmixer
 import base64
+import sys
 
 def main():
     base_URL = "http://localhost:8080"
     reset_URL = base_URL + "/forgot"
     register_URL = base_URL + "/register"
+
+    if(len(sys.argv) == 2):
+        new_password = sys.argv[1]
+    else:
+        new_password = "coalescence"
     adv_parameters = {'user':'adv', 'password':'password_lmao'}
-    new_password = "lmao"
     admin_parameters = {'user':'admin', 'password':new_password}
+
     adv = unmixer.unmixer()
 
     # First register adversary as a user
