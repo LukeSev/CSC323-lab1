@@ -54,31 +54,11 @@ class unmixer:
         shifted = cut >> length
         return shifted
 
-    def test(self, y):
-        print("\n(mix)    y: {} - {}".format(hex(y), bin(y)))
-        # Mix
-        yOrg = y
-        y = y ^ ((y >> self.U))
-        print("(mix)   s1: {} - {}".format(hex(y), bin(y)))
-        y = y ^ ((y << self.S) & self.B)
-        print("(mix)   s2: {} - {}".format(hex(y), bin(y)))
-        y = y ^ ((y << self.T) & self.C)
-        print("(mix)   s3: {} - {}".format(hex(y), bin(y)))
-        y = y ^ (y >> self.L)
-        print("(mix)   s4: {} - {}".format(hex(y), bin(y)))
-        mixed = self.int_bits(y)
-        mix64 = base64.b64encode(int.to_bytes(mixed, 4, "big"))
-        un64 = int.from_bytes(base64.b64decode(mix64), "big")
-        # Notation comes from my drawing/notes where I wrote everything out in steps
-        # First get s4, the output of extract number (i.e. after the fourth step)
-        s4 = un64
-        unmixed = self.unmix_y(s4)
-
-        if(yOrg != unmixed):
-            return 1
-        return 0
-
     def unmix_y(self, s4):
+        # Note: My thought process/method for reversing MT was based on working out the 'mixing' of it manually
+        # and looking at the results. The various names of the variables for intermediate steps are named accordingly
+        # My work for this can be found at: https://github.com/LukeSev/CSC323-lab1/blob/master/MT%20Unmixer%20Steps.pdf
+        
         # Next get s3 by reversing s3 ^ (s3 >> self.L)
         s3 = s4 ^ (s4 >> self.L)
 
@@ -127,7 +107,6 @@ class unmixer:
                 ints[j] = int(strings[j])
             tokens[i] = ints
         return tokens
-
 
 def main():
     successful = 0

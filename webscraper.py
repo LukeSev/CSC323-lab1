@@ -8,6 +8,8 @@ def main():
     reset_URL = base_URL + "/forgot"
     register_URL = base_URL + "/register"
 
+    # Admin's new password can be chosen via commandline arg
+    # Assumes arg is compatible password string
     if(len(sys.argv) == 2):
         new_password = sys.argv[1]
     else:
